@@ -14,10 +14,10 @@ shinyServer(function(input, output) {
             filter(year %in% c(input$year)) %>% 
             filter(`Chemical Name` %in% c(input$chemicals)) %>% 
             mutate(town_select = case_when(Town == input$town ~ "highlight",
-                                           TRUE ~ "fade")
-            )
+                                           TRUE ~ "fade"))
     )
     
+    #set inputs
     output$town <- renderUI({
         pickerInput("town", "TOWN:", choices = as.list(unique(levels(ma_dw_clean$Town))), 
                     #selected = "CAMBRIDGE",
@@ -55,6 +55,8 @@ shinyServer(function(input, output) {
                         title = "Select  chemical(s)"), 
                     multiple = TRUE)
     })
+    
+    #add instructions
     instruct <- reactive(
         if(!isTruthy(input$town)|!isTruthy(input$year)|!isTruthy(input$chemicals)){
            paste0("<br> Use the dropdown boxes to the right to select your town, the testing year,
@@ -64,95 +66,15 @@ shinyServer(function(input, output) {
         instruct()
     })
     
-
+    
+    #add summary headlines of most recent testing
     output$summary <- renderText({
         
         req(input$town)
         req(input$year)
         req(input$chemicals)
         
-
-        
-        text <- list()
-        for(i in unique(input$chemicals)){
-
-            # get town-specific data: most recent test and highest level in that year
-            summary_dat <- ma_dw_clean %>%
-                filter(Town %in% c(input$town)) %>%
-                filter(`Chemical Name` == i) %>%
-                mutate(year = as.numeric(as.character(year))) %>%
-                group_by(Town, year, `Chemical Name`, MCL, `Maximum Contaminant Level (MCL)`, UOM) %>%
-                summarize(max_result = max(result))
-            
-            snake_chem <- str_to_title(i)
-            
-            if(length(summary_dat$Town) == 0){
-                text[[i]] <- (paste0("<br><b>", snake_chem, "</b><br>",   "The public water system in ", unique(str_to_title(input$town)), 
-                                     " did not report testing results for ", snake_chem, ". <br>"))
-            }
-            
-            #start rules for summary text -- will indicate if highest level is above/below MCL
-            else if(max(summary_dat$max_result[which(summary_dat$`Chemical Name` == i &
-                                                summary_dat$year == max(summary_dat$year))]) > summary_dat$MCL)
-            {
-                text[[i]] <- (paste0("<b>", i, "</b><br>", "The most recent testing for ",
-                                     snake_chem ," in ", unique(str_to_title(summary_dat$Town)),
-                              " was conducted in ", max(summary_dat$year), ". ",
-                              "The federal standard for ", snake_chem, " is ", unique(summary_dat$`Maximum Contaminant Level (MCL)`), 
-                              ". The highest level reported in ", max(summary_dat$year), 
-                              " in your town for this chemical is: ", "<font color=\"#6A5ACD\"><b>",
-                              max(summary_dat$max_result[which(summary_dat$year ==
-                                                                   max(summary_dat$year) &
-                                                                   summary_dat$`Chemical Name` == i)])," ", 
-                              unique(summary_dat$UOM), "</b></font>",". This value <b>exceeds </b>the
-                          federal standard for ", snake_chem, ". <br>"))
-            }
-            
-            #else if it was detected but below MCL
-            else if(max(summary_dat$max_result[which(summary_dat$year == max(summary_dat$year))]) < summary_dat$MCL &
-                    max(summary_dat$max_result[which(summary_dat$year == max(summary_dat$year))]) > 0
-            )
-            {
-                text[[i]] <- paste0("<br><b>", i, "</b><br>", "The most recent testing in ", 
-                                    unique(str_to_title(summary_dat$Town)),
-                                    " was conducted in ", max(summary_dat$year), ". ",
-                                    "The federal standard for ", snake_chem ," is ", 
-                                    unique(summary_dat$`Maximum Contaminant Level (MCL)`),
-                                    ". The highest level reported in ", max(summary_dat$year), 
-                                    " in your town for this chemical is: ",
-                                    "<font color=\"#6A5ACD\"><b>",
-                                    max(summary_dat$max_result[which(summary_dat$year == max(summary_dat$year) &
-                                                                         summary_dat$`Chemical Name` == i)]), 
-                                    " ", unique(summary_dat$UOM), 
-                                    " </b></font>. This value is <b>below</b> the federal standard for ",
-                                    snake_chem, ". <br>")
-                
-            }
-            #else if not detected 
-            else if(max(summary_dat$max_result[which(summary_dat$year == max(summary_dat$year))]) < 0 & 
-                    !is.infinite(max(summary_dat$max_result[which(summary_dat$year == max(summary_dat$year))])))
-            {
-                text[[i]] <- paste0("<br><b>", i, "</b><br>", "The most recent testing in ", 
-                                    unique(str_to_title(summary_dat$Town)),
-                                    " was conducted in ", max(summary_dat$year), ". ",
-                                    "The federal standard for ", snake_chem, " is ",  
-                                    unique(summary_dat$`Maximum Contaminant Level (MCL)`),
-                                    ". The highest level reported in ", max(summary_dat$year), 
-                                    " in your town for this chemical is: <font color=\"#6A5ACD\"><b>Not Detected </b></font>.
-                          This value is <b>below</b> the federal standard. <br>"
-                         )
-                
-            }
-            
-            else{
-                text[[i]] <- (paste0("<br><b>", i, "</b><br>",   "The public water system in ", unique(str_to_title(input$town)), 
-                                     "did not report testing results for ", snake_chem, ". <br>"))
-            }
-            
-            
-        }
-        
-        return(paste0(text))
+        summary_headline(input$chemicals, input$town)
         
     })
 
@@ -168,15 +90,12 @@ shinyServer(function(input, output) {
                       are shown in nanograms per liter (ng/L). For more info, 
                       see the <a href = ",'#FAQ' ,">FAQ</a></span><br><br>"))
     })
-    
-
-    
+ 
     #download button not currently active, requires Rmd file that has not been set up yet
     observeEvent(input$download, {
         show_alert(title = "This feature is not currently available", text = "Stay tuned!")
     })
-    
-    
+
     
     #create interactive plot
     output$dw <- renderPlotly({
@@ -192,7 +111,7 @@ shinyServer(function(input, output) {
         town_dat_nd <- dat() %>%
             filter(nd_flag == "ND")
 
-            pfas_plot <- ggplot(town_dat) +
+            det_plot <- ggplot(town_dat) +
                 geom_jitter(aes(x = as.factor(year), y = result,
                                 color = town_select,
                                 alpha = town_select,
@@ -214,8 +133,9 @@ shinyServer(function(input, output) {
                                    labels = c("Other towns in Massachusetts",
                                               "My town")) +
                 scale_y_continuous(limits = c(0, NA)) + 
-                facet_wrap(~`Chemical Name`+UOM, ncol = 1, scales = "free", 
-                           labeller = labeller(`Chemical Name` = label_value, UOM = label_value, .multi_line = FALSE)) +
+                facet_wrap(.~`Chemical Name`+UOM, ncol = 1, scales = "free", 
+                           labeller = labeller(`Chemical Name` = label_value, 
+                                               UOM = label_value, .multi_line = FALSE)) +
                 ggthemes::theme_pander() +
                 xlab("")+
                 ylab("Concentration") +
@@ -224,37 +144,38 @@ shinyServer(function(input, output) {
                       panel.grid.major.y = element_blank(),
                       panel.grid.major.x = element_line(color = "snow2"),
                       strip.text.x = element_text(color = "#556B2F", face = "bold"),
+                      strip.text.y = element_text(color = "white"), 
                       text = element_text(family = "Arial"))
         
 
          #manually fix height of plot
-            fig <- ggplotly(pfas_plot, height = length(unique(town_dat$`Chemical Name`))*300, tooltip = c("label", "label2", "label3", "label4"))
+            det_plot_ly <- ggplotly(det_plot, height = length(unique(town_dat$`Chemical Name`))*300, tooltip = c("label", "label2", "label3", "label4"))
         
 
 
         #manually fix the legend
         for(i in seq_along(1:length(unique(town_dat$chemname)))){
             if(i > 1){
-                fig$x$data[[1]]$name <- "Other Towns in MA"
-                fig$x$data[[i]]$showlegend <- FALSE
+                det_plot_ly$x$data[[1]]$name <- "Other Towns in MA"
+                det_plot_ly$x$data[[i]]$showlegend <- FALSE
 
-                fig$x$data[[i+1]]$name <- paste(str_to_title(input$town))
-                fig$x$data[[length(unique(town_dat$chemname))+i]]$showlegend <- FALSE
+                det_plot_ly$x$data[[i+1]]$name <- paste(str_to_title(input$town))
+                det_plot_ly$x$data[[length(unique(town_dat$chemname))+i]]$showlegend <- FALSE
 
             }
             else{
-                fig$x$data[[1]]$name <- "Other Towns in MA"
-                fig$x$data[[2]]$name <- paste(str_to_title(input$town))
+                det_plot_ly$x$data[[1]]$name <- "Other Towns in MA"
+                det_plot_ly$x$data[[2]]$name <- paste(str_to_title(input$town))
 
 
             }
         }
 
-        fig$x$layout$legend$title$text <- ""
+            det_plot_ly$x$layout$legend$title$text <- ""
 
 
 
-        sub_box <- ggplot(town_dat_nd) +
+        nd_plot <- ggplot(town_dat_nd) +
             geom_jitter(aes(x = as.factor(year), y = result,
                             color = town_select,
                             alpha = town_select,
@@ -285,18 +206,15 @@ shinyServer(function(input, output) {
 
         #manually fix height of plot
 
-        sub_box_ly <- ggplotly(sub_box, #height = length(unique(town_dat_nd$chemname))*300,
+        nd_plot_ly <- ggplotly(nd_plot, 
                                tooltip = c("label", "label2", "label3", "label4"))
 
-        #sub_box_ly$x$data$showlegend <- FALSE
-        
-        for(i in seq_along(1:length((sub_box_ly$x$data)))){
-            sub_box_ly$x$data[[i]]$showlegend <- FALSE
-            #sub_box_ly$x$data[[length(unique(town_dat$chemname))+i]]$showlegend <- FALSE
+    
+        for(i in seq_along(1:length((nd_plot_ly$x$data)))){
+            nd_plot_ly$x$data[[i]]$showlegend <- FALSE
         }
         
-        
-        subplot(list(sub_box_ly, fig), widths = c(.1, .9),
+        subplot(list(nd_plot_ly, det_plot_ly), widths = c(.1, .9),
                 nrows = 1)
         
     })
@@ -318,12 +236,12 @@ shinyServer(function(input, output) {
     )
     # 
     # ##### Load HTML text on other pages ####
-    # output$FAQ_text <- renderUI(
-    #     return(includeHTML("html/FAQ.html"))
-    # )
-    # 
-    # output$about <- renderUI(
-    #     return(includeHTML("html/about.html"))
-    # )
+    output$FAQ_text <- renderUI(
+        return(includeHTML("html/FAQ.html"))
+    )
+
+    output$about <- renderUI(
+        return(includeHTML("html/about.html"))
+    )
     
 })
