@@ -1,12 +1,5 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+### Author: AHz
+### Date published: 
 
 
 # set up page structure 
@@ -16,25 +9,15 @@ shinyUI(navbarPage("MA Drinking Water",
                               #set theme
                               theme = shinytheme("flatly"),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
-                              #tags$head(tags$link(href = "button.js")),
                               #add analytics
                               #tags$head(includeHTML(("html/google-analytics.html"))),
                               fluidRow(
                                 column(4,
                                 #        #add panel with text on the left side of the page
                                        wellPanel(
-                                #          h3("What are PFAS?"),
-                                #          htmlOutput("pfas_exp"),
-                                #          h3("Health Effects"),
-                                #          htmlOutput("health_effects"),
                                          h3("What's in my water?"),
                                          uiOutput("instructions"),
                                          htmlOutput("summary"),
-                                #          h3("What can I do?"),
-                                #          p("There are many steps you can take to reduce your exposure to PFAS."),
-                                #          htmlOutput("treatment"),
-                                #          htmlOutput("community")
-                                #          )
                                        )),
                                        #add input options 
                                        column(8,
