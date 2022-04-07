@@ -3,17 +3,20 @@
 
 
 # set up page structure 
-shinyUI(navbarPage("MA Drinking Water", 
-                   tabPanel("What's in my water?", 
+shinyUI(navbarPage("What's in my water?", 
+                   tabPanel("My Water Report", 
                             fluidPage(
                               #set theme
                               theme = shinytheme("flatly"),
+                              # # add this
+                              tags$head(tags$style(HTML('.navbar-static-top {background-color: #3c897e;}',
+                                                        '.navbar-default .navbar-nav>.active>a {background-color: #3c897e;}'))),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
                               #add analytics
                               #tags$head(includeHTML(("html/google-analytics.html"))),
                               fluidRow(
                                 column(4,
-                                #        #add panel with text on the left side of the page
+                                 #add panel with text on the left side of the page
                                        wellPanel(
                                          h3("What's in my water?"),
                                          uiOutput("instructions"),
@@ -22,7 +25,6 @@ shinyUI(navbarPage("MA Drinking Water",
                                        #add input options 
                                        column(8,
                                               h2("My Water Report"),
-                                              
                                               h4(""),
                                               fluidRow(column(6,uiOutput("town"),
                                                               uiOutput("chemicals")),
@@ -35,6 +37,10 @@ shinyUI(navbarPage("MA Drinking Water",
                                               tabsetPanel(
                                                 tabPanel("Graphs",
                                                          htmlOutput("hint"),
+                                                         h4(""),
+                                                         conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+                                                                          tags$div("Loading...",id="loadmessage")
+                                                         ),
                                                          plotlyOutput("dw")),
                                                 tabPanel("Table", DT::dataTableOutput("dw_table")))
                                        )
