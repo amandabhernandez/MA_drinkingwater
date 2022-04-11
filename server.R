@@ -19,7 +19,7 @@ shinyServer(function(input, output) {
                     choices = as.list(unique(levels(ma_dw_clean$Town))), 
                     #selected = "CAMBRIDGE",
                     options = list(
-                        `actions-box` = TRUE,
+                        `actions-box` = TRUE, 
                         title = "Select town"), 
                     multiple = FALSE)
     })
@@ -57,8 +57,8 @@ shinyServer(function(input, output) {
     #add instructions
     instruct <- reactive(
         if(!isTruthy(input$town)|!isTruthy(input$year)|!isTruthy(input$chemicals)){
-            paste0("<br> Use the dropdown boxes to the right to select your town, 
-                  the testing year, and chemicals of interest.") 
+            paste0("<br> <span style='color: #CD5B45'>Use the dropdown boxes to the right to select your town, 
+                  the testing year, and chemicals of interest.</span>") 
         })
     output$instructions <- renderText({
         instruct()

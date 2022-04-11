@@ -1,10 +1,11 @@
 
-library(shiny)
-library(shinythemes)
-library(shinyWidgets)
-library(plotly)
-library(tidyverse)
-library(lubridate)
+library(pacman)
+p_load(shiny)
+p_load(shinythemes)
+p_load(shinyWidgets)
+p_load(plotly)
+p_load(tidyverse)
+p_load(lubridate)
 
 #load data and clean
 ma_dw_clean <- read_csv("data/MA drinking water data.csv")  %>% 
