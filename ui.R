@@ -8,9 +8,6 @@ shinyUI(navbarPage("What's in my water?",
                             fluidPage(
                               #set theme
                               theme = shinytheme("flatly"),
-                              # # add this
-                              tags$head(tags$style(HTML('.navbar-static-top {background-color: #3c897e;}',
-                                                        '.navbar-default .navbar-nav>.active>a {background-color: #3c897e;}'))),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
                               #add analytics
                               #tags$head(includeHTML(("html/google-analytics.html"))),
