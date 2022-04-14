@@ -1,18 +1,18 @@
 
 library(pacman)
+p_load(tidyverse)
 p_load(shiny)
-p_load(shinythemes)
 p_load(shinyWidgets)
 p_load(plotly)
-p_load(tidyverse)
 p_load(lubridate)
+
 
 #load data and clean
 ma_dw_clean <- read_csv("data/MA drinking water data.csv")  %>% 
   mutate(Town = factor(Town),
          year = fct_rev(factor(year(date))),
          chemname = factor(chemname),
-         `Chemical Name` = factor(`Chemical Name`))
+         `Chemical Name` = factor(`Chemical Name`)) 
 
 
 # headline creation function
@@ -99,7 +99,7 @@ summary_headline <- function(input_chems, input_town){
   return(paste0(text))
 }
 
-# note: use this to id slow responses
+# note: use this to help id slow responses
 # profvis::profvis({
-#   runApp('MA_drinkingwater_carcinogens')
-#   })
+#   runApp('~/Desktop/R/HSPH-SM/MA_drinkingwater')
+# })

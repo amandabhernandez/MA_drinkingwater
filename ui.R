@@ -7,7 +7,7 @@ shinyUI(navbarPage("What's in my water?",
                    tabPanel("My Water Report", 
                             fluidPage(
                               #set theme
-                              theme = shinytheme("flatly"),
+                              theme = shinythemes::shinytheme("flatly"),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
                               #add analytics
                               #tags$head(includeHTML(("html/google-analytics.html"))),

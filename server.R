@@ -73,7 +73,7 @@ shinyServer(function(input, output) {
         
         summary_headline(input$chemicals, input$town)
         
-    })
+    }) 
     
     # ##### Graphs ####
     
@@ -214,9 +214,10 @@ shinyServer(function(input, output) {
         }
         
         subplot(list(nd_plot_ly, det_plot_ly), widths = c(.1, .9),
-                nrows = 1)
+                nrows = 1) %>%
+            layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
         
-    })
+    }) 
     
     
     
