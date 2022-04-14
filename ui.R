@@ -10,7 +10,7 @@ shinyUI(navbarPage("What's in my water?",
                               theme = shinythemes::shinytheme("flatly"),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
                               #add analytics
-                              #tags$head(includeHTML(("html/google-analytics.html"))),
+                              tags$head(includeHTML(("html/google-analytics.html"))),
                               fluidRow(
                                 column(4,
                                  #add panel with text on the left side of the page

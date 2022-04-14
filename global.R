@@ -1,10 +1,10 @@
 
-library(pacman)
-p_load(tidyverse)
-p_load(shiny)
-p_load(shinyWidgets)
-p_load(plotly)
-p_load(lubridate)
+
+library(tidyverse)
+library(shiny)
+library(shinyWidgets)
+library(plotly)
+library(lubridate)
 
 
 #load data and clean
