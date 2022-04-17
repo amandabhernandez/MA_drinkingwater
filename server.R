@@ -4,6 +4,36 @@
 # run shiny server
 shinyServer(function(input, output) {
     
+    # the modal dialog where the user can enter the query details.
+    instruct_modal <- modalDialog(
+        title = "Instructions", 
+        size = "l",
+        HTML("<h2>What's in my water tool</h2> <p> Pick your town, contaminant of 
+             interest, and the year to view water testing data for your town over
+             the last 10 years. The contaminant levels in your town will appear in purple. 
+             For comparison, other towns in Massachusetts will appear in blue when detected,
+             and grey if the contaminant was not detected. Hover over the graphs to 
+             learn more!</p>"),
+             img(src='instructions.png', height="100%", width="100%"),
+
+        easyClose = T,
+        footer = tagList(
+            actionButton("go", "Got it!")
+        )
+    )
+    
+    # Show the model on start up ...
+    showModal(instruct_modal)
+    
+    observeEvent(input$help, {
+        showModal(instruct_modal)
+    })
+    
+    observeEvent(input$go, {
+        removeModal()
+        
+    })
+    
     #filter water data based on user input
     dat <- reactive(
         ma_dw_clean %>% 
@@ -234,13 +264,5 @@ shinyServer(function(input, output) {
                                          order = list(list(2, 'desc')))
     )
     
-    # ##### Load HTML text on other pages ####
-    output$FAQ_text <- renderUI(
-        return(includeHTML("html/FAQ.html"))
-    )
-    
-    output$about <- renderUI(
-        return(includeHTML("html/about.html"))
-    )
     
 })
