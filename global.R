@@ -5,6 +5,7 @@ library(shiny)
 library(shinyWidgets)
 library(plotly)
 library(lubridate)
+library(fontawesome)
 
 
 #load data and clean

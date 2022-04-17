@@ -3,15 +3,25 @@
 
 
 # set up page structure 
-shinyUI(navbarPage("What's in my water?", 
-                   tabPanel("My Water Report", 
+shinyUI(navbarPage("",
+                   tabPanel("What's in my water?", icon = fontawesome::fa_i("tint"), 
                             fluidPage(
                               #set theme
                               theme = shinythemes::shinytheme("flatly"),
                               tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")),
                               #add analytics
                               tags$head(includeHTML(("html/google-analytics.html"))),
+
+
                               fluidRow(
+                                column(12, 
+                                       wellPanel(h2("My Water Report"),
+                                                 includeHTML("html/landing_text.html"),
+                                                 actionButton("help", "Show Instructions", 
+                                                              icon =fontawesome::fa_i("question"))) 
+                                ),
+                                column(12, hr()), 
+
                                 column(4,
                                  #add panel with text on the left side of the page
                                        wellPanel(
@@ -21,8 +31,8 @@ shinyUI(navbarPage("What's in my water?",
                                        )),
                                        #add input options 
                                        column(8,
-                                              h2("My Water Report"),
-                                              h4(""),
+                                              #h2("My Water Report"),
+                                              br(), 
                                               fluidRow(column(6,uiOutput("town"),
                                                               uiOutput("chemicals")),
                                                        column(2, uiOutput("year"),
@@ -46,7 +56,7 @@ shinyUI(navbarPage("What's in my water?",
                               
                             ),
                             tabPanel(title = "FAQ",
-                                     htmlOutput("FAQ_text")),
+                                     includeHTML("html/FAQ.html")),
                             tabPanel("About",
-                                     htmlOutput("about")))
+                                     includeHTML("html/about.html")))
 )
