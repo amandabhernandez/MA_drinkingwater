@@ -6,7 +6,7 @@ shinyServer(function(input, output) {
     
     # the modal dialog where the user can enter the query details.
     instruct_modal <- modalDialog(
-        title = "Instructions", 
+        title = "Instructions",
         size = "l",
         HTML("<h2>What's in my water tool</h2> <p> Pick your town, contaminant of 
              interest, and the year to view water testing data for your town over
@@ -14,7 +14,7 @@ shinyServer(function(input, output) {
              For comparison, other towns in Massachusetts will appear in blue when detected,
              and grey if the contaminant was not detected. Hover over the graphs to 
              learn more!</p>"),
-             img(src='instructions.png', height="100%", width="100%"),
+             img(src='MA water tool instructions.png', height="100%", width="100%"),
 
         easyClose = T,
         footer = tagList(
@@ -23,7 +23,7 @@ shinyServer(function(input, output) {
     )
     
     # Show the model on start up ...
-    showModal(instruct_modal)
+    # showModal(instruct_modal)
     
     observeEvent(input$help, {
         showModal(instruct_modal)
@@ -87,8 +87,8 @@ shinyServer(function(input, output) {
     #add instructions
     instruct <- reactive(
         if(!isTruthy(input$town)|!isTruthy(input$year)|!isTruthy(input$chemicals)){
-            paste0("<br> <span style='color: #CD5B45'>Use the dropdown boxes to the right to select your town, 
-                  the testing year, and chemicals of interest.</span>") 
+            paste0("<span style='color: #CD5B45'>Use the dropdown boxes to the right to select your town, 
+                  the testing year, and chemicals of interest.</span><br>") 
         })
     output$instructions <- renderText({
         instruct()
