@@ -2,7 +2,7 @@
 ### Date published: 
 
 # run shiny server
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
     
     # the modal dialog where the user can enter the query details.
     instruct_modal <- modalDialog(
@@ -32,6 +32,12 @@ shinyServer(function(input, output) {
     observeEvent(input$go, {
         removeModal()
         
+    })
+    
+    observeEvent(input$start, {
+        updateNavbarPage(session,
+                         inputId="nav",
+                         selected="report")
     })
     
     #filter water data based on user input
